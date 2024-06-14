@@ -291,34 +291,35 @@ class tSdkCameraDevInfo(MvStructure):
 
 # 相机的分辨率设定范围
 class tSdkResolutionRange(MvStructure):
-	_fields_ = [("iHeightMax", c_int), 	#图像最大高度
-				("iHeightMin", c_int), 	#图像最小高度
-				("iWidthMax", c_int), 	#图像最大宽度
-				("iWidthMin", c_int), 	#图像最小宽度
-				("uSkipModeMask", c_uint), 		#SKIP模式掩码，为0，表示不支持SKIP 。bit0为1,表示支持SKIP 2x2 bit1为1，表示支持SKIP 3x3....
-				("uBinSumModeMask", c_uint), 	#BIN(求和)模式掩码，为0，表示不支持BIN 。bit0为1,表示支持BIN 2x2 bit1为1，表示支持BIN 3x3....
-				("uBinAverageModeMask", c_uint),#BIN(求均值)模式掩码，为0，表示不支持BIN 。bit0为1,表示支持BIN 2x2 bit1为1，表示支持BIN 3x3....
-				("uResampleMask", c_uint)] 		#硬件重采样的掩码
+	_fields_ = [("iHeightMax", c_int), 	#image maximum height
+				("iHeightMin", c_int), 	#image minimum height
+				("iWidthMax", c_int), 	#image maximum width
+				("iWidthMin", c_int), 	#image minimum width
+				("uSkipModeMask", c_uint), 		#SKIP mode mask, if it is 0, it means SKIP is not supported. Bit0 is 1, which means SKIP 2x2 is supported. Bit1 is 1, which means SKIP 3x3 is supported.....
+				("uBinSumModeMask", c_uint), 	#BIN (summation) mode mask, if it is 0, it means BIN is not supported. Bit0 is 1, which means BIN 2x2 is supported. Bit1 is 1, which means BIN 3x3 is supported.....
+				("uBinAverageModeMask", c_uint),#BIN (average) mode mask, if it is 0, it means BIN is not supported. Bit0 is 1, which means BIN 2x2 is supported. Bit1 is 1, which means BIN 3x3 is supported.....
+				("uResampleMask", c_uint)] 		#Mask for hardware resampling
 
 #相机的分辨率描述
 class tSdkImageResolution(MvStructure):
 	_fields_ = [
-		("iIndex", c_int),                # 索引号，[0,N]表示预设的分辨率(N 为预设分辨率的最大个数，一般不超过20),OXFF 表示自定义分辨率(ROI)
-		("acDescription", c_char * 32),   # 该分辨率的描述信息。仅预设分辨率时该信息有效。自定义分辨率可忽略该信息
-		("uBinSumMode", c_uint),          # BIN(求和)的模式,范围不能超过tSdkResolutionRange中uBinSumModeMask
-		("uBinAverageMode", c_uint),      # BIN(求均值)的模式,范围不能超过tSdkResolutionRange中uBinAverageModeMask
-		("uSkipMode", c_uint),            # 是否SKIP的尺寸，为0表示禁止SKIP模式，范围不能超过tSdkResolutionRange中uSkipModeMask
-		("uResampleMask", c_uint),        # 硬件重采样的掩码
-		("iHOffsetFOV", c_int),        # 采集视场相对于Sensor最大视场左上角的垂直偏移
-		("iVOffsetFOV", c_int),        # 采集视场相对于Sensor最大视场左上角的水平偏移
-		("iWidthFOV", c_int),          # 采集视场的宽度 
-		("iHeightFOV", c_int),         # 采集视场的高度
-		("iWidth", c_int),             # 相机最终输出的图像的宽度
-		("iHeight", c_int),            # 相机最终输出的图像的高度
-		("iWidthZoomHd", c_int),       # 硬件缩放的宽度,不需要进行此操作的分辨率，此变量设置为0.
-		("iHeightZoomHd", c_int),      # 硬件缩放的高度,不需要进行此操作的分辨率，此变量设置为0.
-		("iWidthZoomSw", c_int),       # 软件缩放的宽度,不需要进行此操作的分辨率，此变量设置为0.
-		("iHeightZoomSw", c_int),      # 软件缩放的高度,不需要进行此操作的分辨率，此变量设置为0.
+		("iIndex", c_int),                # Index number, [0,N] indicates preset resolution (N is the maximum number of preset resolutions, generally no more than 20), 0xFF indicates custom resolution (ROI)
+		("acDescription", c_char * 32),   # Description information of the resolution. This information is only valid for preset resolutions. For custom resolutions, this information can be ignored.
+		("uBinSumMode", c_uint),          # BIN (sum) mode, the range must not exceed uBinSumModeMask in tSdkResolutionRange
+		("uBinAverageMode", c_uint),      # BIN (average) mode, the range must not exceed uBinAverageModeMask in tSdkResolutionRange
+		("uSkipMode", c_uint),            # Whether SKIP mode is enabled, 0 means SKIP mode is disabled, the range must not exceed uSkipModeMask in tSdkResolutionRange
+		("uResampleMask", c_uint),        # Mask for hardware resampling
+		("iHOffsetFOV", c_int),           # Vertical offset of the capture field relative to the upper left corner of the Sensor's maximum field of view
+		("iVOffsetFOV", c_int),           # Horizontal offset of the capture field relative to the upper left corner of the Sensor's maximum field of view
+		("iWidthFOV", c_int),             # Width of the capture field
+		("iHeightFOV", c_int),            # Height of the capture field
+		("iWidth", c_int),                # Final output image width from the camera
+		("iHeight", c_int),               # Final output image height from the camera
+		("iWidthZoomHd", c_int),          # Width for hardware zoom, set to 0 if this operation is not needed for the resolution
+		("iHeightZoomHd", c_int),         # Height for hardware zoom, set to 0 if this operation is not needed for the resolution
+		("iWidthZoomSw", c_int),          # Width for software zoom, set to 0 if this operation is not needed for the resolution
+		("iHeightZoomSw", c_int),         # Height for software zoom, set to 0 if this operation is not needed for the resolution
+
 	]
 
 	def GetDescription(self):
@@ -337,8 +338,8 @@ class tSdkColorTemperatureDes(MvStructure):
 #相机帧率描述信息
 class tSdkFrameSpeed(MvStructure):
 	_fields_ = [
-		("iIndex", c_int),				# 帧率索引号，一般0对应于低速模式，1对应于普通模式，2对应于高速模式      
-		("acDescription", c_char * 32), # 描述信息
+		("iIndex", c_int),				# Frame rate index number, generally 0 corresponds to low-speed mode, 1 corresponds to normal mode, and 2 corresponds to high-speed mode     
+		("acDescription", c_char * 32), # Description
 	]
 
 	def GetDescription(self):
@@ -347,13 +348,13 @@ class tSdkFrameSpeed(MvStructure):
 #相机曝光功能范围定义
 class tSdkExpose(MvStructure):
 	_fields_ = [
-		("uiTargetMin", c_uint),       #自动曝光亮度目标最小值
-		("uiTargetMax", c_uint),       #自动曝光亮度目标最大值
-		("uiAnalogGainMin", c_uint),   #模拟增益的最小值，单位为fAnalogGainStep中定义      
-		("uiAnalogGainMax", c_uint),   #模拟增益的最大值，单位为fAnalogGainStep中定义        
-		("fAnalogGainStep", c_float),  #模拟增益每增加1，对应的增加的放大倍数。例如，uiAnalogGainMin一般为16，fAnalogGainStep一般为0.125，那么最小放大倍数就是16*0.125 = 2倍
-		("uiExposeTimeMin", c_uint),   #手动模式下，曝光时间的最小值，单位:行。根据CameraGetExposureLineTime可以获得一行对应的时间(微秒),从而得到整帧的曝光时间    
-		("uiExposeTimeMax", c_uint),   #手动模式下，曝光时间的最大值，单位:行
+		("uiTargetMin", c_uint),       #Auto exposure brightness target minimum
+		("uiTargetMax", c_uint),       #Auto exposure brightness target maximum
+		("uiAnalogGainMin", c_uint),   #The minimum value of the analog gain, the unit is defined in fAnalogGainStep      
+		("uiAnalogGainMax", c_uint),   #The maximum value of the analog gain, the unit is defined in fAnalogGainStep       
+		("fAnalogGainStep", c_float),  #Each increase in analog gain by 1 corresponds to an increase in amplification factor. For example, uiAnalogGainMin is generally 16, fAnalogGainStep is generally 0.125, then the minimum amplification factor is 16*0.125 = 2 times
+		("uiExposeTimeMin", c_uint),   #In manual mode, the minimum value of exposure time, unit: row. According to CameraGetExposureLineTime, you can get the corresponding time (microseconds) of a line to get the exposure time of the entire frame.    
+		("uiExposeTimeMax", c_uint),   #In manual mode, the maximum value of exposure time, unit: row
 	]
 
 #触发模式描述
@@ -509,7 +510,7 @@ class tSdkCameraCapbility(MvStructure):
 		("pBayerDecAlmHdDesc", POINTER(tSdkBayerDecodeAlgorithm)),#硬件Bayer转换为RGB数据的算法描述，为NULL表示不支持
 		("iBayerDecAlmHdDesc", c_int),     #硬件Bayer转换为RGB数据的算法个数，为0表示不支持
 
-		# 图像参数的调节范围定义,用于动态构建UI
+		# Definition of the adjustment range of image parameters, used to dynamically build UI
 		("sExposeDesc", tSdkExpose),      #曝光的范围值
 		("sResolutionRange", tSdkResolutionRange), #分辨率范围描述  
 		("sRgbGainRange", tRgbGainRange),    #图像数字增益范围描述  

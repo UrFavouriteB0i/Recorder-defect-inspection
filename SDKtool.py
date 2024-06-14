@@ -1,7 +1,6 @@
 import cv2
 import numpy as np
 import mvsdk
-import platform
 
 class Camera(object):
     def __init__(self, DevInfo):
@@ -11,7 +10,22 @@ class Camera(object):
         self.cap = None
         self.pFrameBuffer = 0
 
+    def camer(self):
+        global hCamera
+        cam = hCamera
+        
+        return cam
+    
+    def ReturnPHead(self):
+        global FrameHead, pFrameBuffer
+        pFrame = pFrameBuffer
+        fHead = FrameHead
+
+        return pFrame, fHead
+    
     def open(self):
+        global hCamera, pFrameBuffer
+        
         if self.hCamera > 0:
             return True
         
@@ -37,14 +51,12 @@ class Camera(object):
         #(if it is a black and white camera, there is no need to convert the format, 
         #but the ISP has other processing, so this buffer also needs to be allocated)
         pFrameBuffer = mvsdk.CameraAlignMalloc(FrameBufferSize,16)
-
+       
         #Switch camera mode to continuous acquisition
         mvsdk.CameraSetTriggerMode(hCamera, 0)
 
-        #Also set Manual exposure, exposure time 30ms
+        #Also set Manual exposure
         mvsdk.CameraSetAeState(hCamera, 0)
-        mvsdk.CameraSetExposureTime(hCamera, 30*1000)
-        
         #Let the SDK internal image taking thread start working
         mvsdk.CameraPlay(hCamera)
 
@@ -62,12 +74,13 @@ class Camera(object):
         self.pFrameBuffer = 0
 
     def grab(self): 
+        global FrameHead
         #Get a frame from the camera
         hCamera = self.hCamera
         pFrameBuffer = self.pFrameBuffer
 
         try:
-            pRawData, FrameHead = mvsdk.CameraGetImageBuffer(hCamera,200)
+            pRawData, FrameHead = mvsdk.CameraGetImageBuffer(hCamera, 2000)
             mvsdk.CameraImageProcess(hCamera, pRawData, pFrameBuffer, FrameHead)
             mvsdk.CameraReleaseImageBuffer(hCamera, pRawData)
 
@@ -87,4 +100,34 @@ class Camera(object):
         except mvsdk.CameraException as e:
             if e.error_code != mvsdk.CAMERA_STATUS_TIME_OUT:
                 print("CameraGetImageBuffer failed({}): {}".format(e.error_code, e.message))
+            return None
+        
+    def setExp(self,ExpState, expVal, AGainVal):
+        try:
+            if ExpState == "Auto":
+                mvsdk.CameraSetAeState(self.hCamera, 1)
+                           
+            elif ExpState == "Manual":
+                mvsdk.CameraSetAeState(self.hCamera, 0)
+                mvsdk.CameraSetExposureTime(self.hCamera, expVal)
+                mvsdk.CameraSetAnalogGainX(self.hCamera, AGainVal)
+
+        except mvsdk.CameraException as e:
+            if e.error_code != mvsdk.CAMERA_STATUS_FAILED:
+                print("error")
+            return None
+    
+    def setWhiteBalance(self):
+        mvsdk.CameraSetOnceWB(self.hCamera)
+        return mvsdk.CameraGetGain(self.hCamera)
+
+    def setROI(self, x, y, w, h):
+        try:
+            resize = mvsdk.tSdkImageResolution(iIndex=0XFF, iHOffsetFOV = x, iVOffsetFOV= y, iWidthFOV= w, iHeightFOV= h, 
+                                    iWidth= w, iHeight= h)
+            
+            mvsdk.CameraSetImageResolution(self.hCamera, resize)
+        except mvsdk.CameraException as e:
+            if e.error_code != mvsdk.CAMERA_STATUS_FAILED:
+                print("error")
             return None
